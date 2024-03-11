@@ -1,0 +1,101 @@
+{% load blog_tags %}
+
+    {% block toc %}{% endblock %}
+
+
+
+
+    <div class="row">
+{#    独占一行，要分行#}
+        <div class="widget">
+{#        生成一个侧边栏的类#}
+            <h3>最新博客:</h3>
+{#        发表几篇博客全部列出来#}
+            {% get_recent_entries as recent_entry_list %}
+{#自定义模板标签，自己写一个，这些东西都是套路，建立在自己app底下，只能叫templatetags#}
+            {% for entry in recent_entry_list %}
+                <div>
+                    <a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a>
+                    <div>{{ entry.author }}  发表于： {{ entry.created_time|date:"Y年m月d日" }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="widget">
+{#        生成一个侧边栏的类#}
+            <h3>推荐博客:</h3>
+            {% get_popular_entries as popular_entry_list %}
+
+            {% for entry in popular_entry_list %}
+                <div>
+                    <a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a>
+                    <span class="badge " style="color: white;background-color: deepskyblue">{{ entry.visiting }}</span>
+{#                表示访问量的徽章#}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="widget">
+            <h3>分类:</h3>
+            {% get_categories as category_list %}
+            <ul class="list-group">
+            {% for category in category_list %}
+                <li class="list-group-item">
+                    <a href="{% url 'timing_blog:blog_category' category.id %}">{{ category.name }}</a>
+{#                    生成一个链接，并提供一个ID的参数#}
+                    <span class="badge">{% get_entry_count_of_category category.name %}</span>
+{#                用django嵌入python的语法格式，来引用模板标签里的方法，并不是直接引用具体的内容#}
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <hr />
+    <div class="row">
+        <div class="widget">
+            <h3>归档:</h3>
+            {% archives as date_list %}
+{#        实参导入进来了#}
+            <ul class="list-group">
+            {% for date in date_list %}
+                <li class="list-group-item">
+                    <a href="{% url 'timing_blog:blog_archives' date.year date.month %}">
+{#                    生成一个链接，并由导入进date变量的时间的每个实参，去提供链接里年月的参数#}
+                        <i class="glyphicon glyphicon-chevron-right"></i>
+{#                        向右的箭头，前端的东西一律去bookstreap找#}
+                        {{ date.year }} 年 {{ date.month }} 月
+{#                        这是直接引用具体的内容，同时将这个内容用于下面引用模板标签里方法作为实参写进#}
+                        <span class="badge">{% get_entry_count_of_date date.year date.month %}</span>
+{#                        实参写进形参，形参与这个方法的变量联系起来#}
+                    </a>
+
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <hr />
+    <div class="row">
+        <div class="widget">
+            <h3>标签云:</h3>
+            {% get_tags as tag_list %}
+            {% for tag in tag_list %}
+                    <a href="{% url 'timing_blog:blog_tag' tag.id %}">
+                        <span class="label {% cycle 'label-default' 'label-primary' 'label-success' 'label-info' 'label-warning' 'label-danger' %}">{{ tag.name }}</span>
+{#                   django内置了一个模板标签 cycle ，每一次循环随机选择这些值，也就是bootstrap的内置CSS类样式来改变颜色底色样式#}
+                    </a>
+            {% endfor %}
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="rss">
+            <a href="/latest/feed/"><i class="glyphicon glyphicon-globe"></i>RSS 订阅</a>
+        </div>
+    </div>

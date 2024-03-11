@@ -1,0 +1,18 @@
+{% extends 'timing_blog/base.html' %}
+{% block title %}403{% endblock %}
+
+{% block content %}
+    <div class="container text-center" style="min-height:500px;">
+{#    容器，文本居中，文案最小高度500像素，防止页脚往上#}
+        <h1>403, Forbidden!</h1>
+         <h2>既然无权访问页面，那就打游戏开摆！</h2>
+        <a class="btn btn-primary" href="{% url 'timing_blog:blog_index' %}">玩一会再返回主页吧</a> &nbsp;&nbsp; 点击游戏框内后&nbsp;&nbsp;按空格是变换哦（回车开始）
+      {#    做成一个按钮的形式，并提供链接进行显示和跳转#}  <p></p>
+        <!-- 在404页面中嵌入游戏 -->
+{#         <iframe src=https://js13kgames.com/games/cat-goric-escape-from-the-warp-chamber/index.html" width="800" height="600" style="margin-top: 50px;"></iframe>#}
+{#                <iframe src=https://js13kgames.com/games/spacecraft/index.html" width="800" height="600" style="margin-top: 50px;"></iframe>#}
+
+        <iframe src="https://js13kgames.com/games/onoff/index.html" width="800" height="600" style="margin-top: 1px;"></iframe>
+
+    </div>
+{% endblock %}

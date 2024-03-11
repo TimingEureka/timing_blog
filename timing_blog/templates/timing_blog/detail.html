@@ -1,0 +1,146 @@
+{#<h1>博客{{ blog_id }}页面</h1>#}
+{#自动随views里的detail类的id属性变化而变化#}
+{% extends 'timing_blog/base.html' %}
+{% load static %}
+{% load comments %}
+{% block title %}博客详细页面{% endblock %}
+{% block css %}
+    <link href="{% static 'timing_blog/css/github.css' %}" rel="stylesheet" />
+{% endblock %}
+{% block content %}
+<div class="container">
+    {#屏幕显示自适应#}
+    <div class="row">
+        {#生成一行，框架的要求#}
+        <div class="col-md-9">
+            {#占十二个位置，本来想剩三个给侧边栏#}
+            <h1>{{ entry.title }}</h1>
+            <p>
+                <strong>{{ entry.author }}</strong>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ entry.created_time|date:'Y年m月d日' }}
+                {#python模板内置的一种时间格式，具体可用格式可查表#}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分类：
+                {% for category in entry.category.all %}
+                    {#类别模型（类）把在文章模型的每个类别中都列出来#}
+                    <a href="{% url 'timing_blog:blog_category' category.id %}">{{ category.name }}</a>
+                {% endfor %}
+
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签：
+                {% for tag in entry.tags.all %}
+                    {#变量（对象）把在文章模型的每个标签的全部都导入进来#}
+                    <a href={% url 'timing_blog:blog_tag' tag.id %}>{{ tag.name }}</a>
+                    {#生成一个链接，并由导入进tag变量的模型tags的每个实参，去提供链接里年月的参数#}
+                {% endfor %}
+
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;浏览量：
+                {{ entry.visiting }}
+            </p>
+            {% if entry.img %}
+                <div><img src="{{ entry.img.url }}" alt="博客配图" width="40%"/></div>
+            {% endif %}
+            <hr />
+            {#分行栏，br是回车，没有横线#}
+            <p>
+                {{ entry.body|safe }}
+                {#python内置的safe安全过滤器，可以让body显示HTML文本的格式，而非全部文本#}
+            </p>
+
+            <div class="row">
+                <hr />
+                {% get_comment_form for entry as form %}
+                {% get_comment_count for entry  as comment_count %}
+                <h3>评论总数： {{ comment_count }}</h3>
+                <hr />
+            </div>
+            {# 评论表单 #}
+            <div class="row">
+                <form class="form-horizontal" action="{% comment_form_target %}" method="post">
+{#                    <form class="form-horizontal" action="{% url 'timing_blog:blog_detail' entry.id %}" method="post">#}
+
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="input_title" class="pull-left control-label">评论标题：</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" name="comment_title" id="input_title" placeholder="请输入标题" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="input_comment" class="pull-left control-label">评论内容:</label>
+                        <div class="col-sm-6">
+                            <textarea style="resize:none;" class="form-control" rows=6 name="comment" id="input_comment" placeholder="在此输入评论" required></textarea>
+                        </div>
+                    </div>
+                    <span style="display: none;">{{ form.honeypot }}</span>
+                    {{ form.content_type }}
+                    {{ form.object_pk }}
+                    {{ form.timestamp }}
+                    {{ form.security_hash }}
+                    <input type="hidden" name="next" value="{% url 'timing_blog:blog_detail' entry.id %}" />
+                    <input  name="parent_id" type="hidden" value="-1" />
+                    <input  name="level" type="hidden" value="0" />
+
+                    <div class="form-group col-sm-7">
+                        <div class="pull-left" style="margin-left: 68px;">
+                            <button type="reset"  class="btn btn-default"><span class="glyphicon glyphicon-repeat"></span>&nbsp;&nbsp;重置</button>
+                        </div>
+                        <div class="pull-right" style="margin-right: 12px;">
+                            <button type="submit" class="btn btn-success" id="id_submit"><span class="glyphicon glyphicon-send"></span>&nbsp;&nbsp;评论</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr />
+            {# 评论显示区 #}
+            <div class="row">
+                {% for comment in comment_list %}
+                    <div class="single_comment" style="margin-left: {{ comment.level }}em">
+                        <div>
+                            {% if comment.user_img %}
+                                <img src="{{ comment.user_img }}" alt="user_image" />
+                            {% else %}
+                                <img src="{% static 'timing_blog/images/admin_image.jpg' %}" />
+                            {% endif %}
+                        </div>
+                        <div class="col-md-11 comment-content" style="margin-bottom: 10px;">
+                            <strong>{{ comment.comment_title }}</strong>
+                            <div>
+                                {% if comment.parent_comment %}
+                                    {{ comment.user_name }}{{ request.user }}
+                                    <i class="glyphicon glyphicon-share-alt"></i>
+                                    {{ comment.parent_comment.user_name }}{{ request.user }}
+                                {% else %}
+                                    By&nbsp;&nbsp;
+                                    {{ comment.user_name }}{{ request.user }}
+                                    &nbsp;&nbsp;&nbsp;On&nbsp;&nbsp;
+                                {% endif %}
+                                <em>{{ comment.submit_date }}</em>
+                                &nbsp;&nbsp;&nbsp;<a href="{% url 'timing_blog:comment_reply' comment.id %}">回复</a>
+                            </div>
+                            <br />
+                            <p>{{ comment.comment }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            {#一行根据约定就是12个占位，侧边栏这里占3列#}
+            {% block toc %}
+                <div class="row">
+                    {#独占一行，要分行#}
+                    <div class="widget">
+                        {#生成一个侧边栏的类#}
+                        <h3>博客目录:</h3>
+                        {#把博客目录全部列出来#}
+                        {{ entry.toc|safe }}
+                        {#safe,就可以改成HTML文本显示，而不是MARKdown格式，#}
+                        {# 博客文章的目录，即文章的小标题，点就可以去到对应的文章部分#}
+                    </div>
+                </div>
+                <hr />
+            {% endblock %}
+            {% include 'timing_blog/right_side_bar.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

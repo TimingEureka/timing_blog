@@ -1,0 +1,111 @@
+{% extends 'timing_blog/base.html' %}
+{% load static %}
+{% block title %}博客首页{% endblock %}
+{#继承timing_blog下面的base#}
+    {% block content %}
+<div class = "container">
+{#屏幕显示自适应#}
+    <div class ="row">
+{#    生成一行，框架的要求#}
+        <div class="col-md-9">
+{#        占十二个位置，本来剩三个给侧边栏#}
+            {% for entry in entry_list%}
+{#循环每一篇在views里的对应分页的博客#}
+            <hr/>
+                <h2>
+                {% if entry.img %}
+                <img src="{{ entry.img.url }}" alt="博客配图" width=130px/>
+{#                    这就是个套路，记住就好#}
+                {% endif %}
+                <a href="{{entry.get_absolute_url}}">{{ entry.title }}</a> </h2>
+{#                显示每一篇文章的标题和对应的url#}
+
+                {% if entry.abstract %}
+                <p>{{ entry.abstract }}</p>
+                {% else %}
+                <p>{{ entry.body|truncatechars:128 }}</p>
+                {% endif %}
+{#                实现了摘要的显示，没有摘要就显示文章body的前128个字符#}
+{#                <p>#}
+{#                    <span></span>#}
+{#                <span class="badge " style="color: white;background-color: lightcoral">作者：{{ entry.author }}</span>#}
+{##}
+{#                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>#}
+{#                <span class="badge " style="color: white;background-color: lightsalmon">发表时间：{{ entry.created_time }}</span>#}
+{##}
+{#                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>#}
+{#                <span class="badge " style="color: white;background-color: deepskyblue">浏览量：{{ entry.visiting }}</span>#}
+{#                </p>#}
+{#                <p>#}
+{#                    <span></span>#}
+{#                <span class="badge " style="color: black ;background-color: white">作者：{{ entry.author }}</span>#}
+{##}
+{#                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>#}
+{#                <span class="badge " style="color: black ;background-color: white">发表时间：{{ entry.created_time }}</span>#}
+{##}
+{#                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>#}
+{#                <span class="badge " style="color: white;background-color: deepskyblue">浏览量：{{ entry.visiting }}</span>#}
+{#                </p>#}
+                <p>
+                <span >作者：{{ entry.author }}</span>
+                <span style="vertical-align: middle;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发表时间：{{ entry.created_time }}</span>
+                <span style="vertical-align: middle;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="badge" style="vertical-align: middle; color: white; background-color: deepskyblue;">浏览量：{{ entry.visiting }}</span>
+                </p>
+            {% endfor %}
+            <hr/>
+{#引申出来的可以用views的方法参数，或者models的方法参数  #}
+{#        同样的，以下这一大段，暂时不需要深入，分页栏的设计也是github借鉴，#}
+{#            有美观的设计就要拿来主义，特别是和后端没什么关系的，后端自己设计，#}
+{#            前端简单繁琐的可以暂时借鉴他人，我在开发记录详细写了对应内容参考学习，有空研究#}
+         <div id="paginator" class="pull-right">
+                <ul class="pagination">
+                {%  if entry_list.has_previous %}
+                    <li><a href="?page={{ entry_list.previous_page_number }}"><i class="glyphicon glyphicon-chevron-left"></i>前一页</a></li>
+                {% endif %}
+
+                {% if first %}
+                    <li><a href="?page=1">1</a></li>
+                {% endif %}
+
+                {% if left %}
+                    {% if left_has_more %}
+                        <span>...</span>
+                    {% endif %}
+
+                    {% for i in left %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+                {% endif %}
+
+
+                <li class="active"><a href="?page={{ entry_list.number }}">{{ entry_list.number }}</a></li>
+
+                {% if right %}
+                    {% for i in right %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+
+                    {% if right_has_more %}
+                        <span>...</span>
+                    {% endif %}
+                {% endif %}
+
+                {% if last %}
+                    <li><a href="?page={{ entry_list.num_pages }}">{{ entry_list.num_pages }}</a></li>
+                {% endif %}
+
+                {% if entry_list.has_next %}
+                    <li><a href="?page={{ entry_list.next_page_number }}">下一页<i class="glyphicon glyphicon-chevron-right"></i></a></li>
+                {% endif %}
+                </ul>
+         </div>
+        </div>
+
+            <div class="col-md-3">
+{#                一行根据约定就是12个占位，侧边栏这里占3列#}
+            {% include 'timing_blog/right_side_bar.html' %}
+            </div>
+    </div>
+</div>
+    {% endblock %}

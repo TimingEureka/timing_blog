@@ -1,0 +1,115 @@
+{% load static %}
+{#先加载static，下面定义区域引入时才能填写路径#}
+{#<%...%>这种语法允许将 Java 代码嵌入到 JSP 页面中，#}
+{#而{%  %}同理类似于它，将Python 代码嵌入Django 模板中。#}
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>{% block title %}基本模版{% endblock %}</title>
+{#做一个基本模板,这个模板中定义了三个区域（块）：`script`、`content` 和 `css`。子模板可以继承这些区域并填充具体的内容。#}
+    <!-- Bootstrap -->
+    <link rel="stylesheet"  href="{% static 'bootstrap-3.4.1-dist/css/bootstrap.min.css' %}" >
+{#引入CSS#}
+      <link rel="stylesheet"  href="{% static 'timing_blog/css/blog_nav.css' %}" >
+
+    {% block css %}
+    {% endblock %}
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+
+{#  由于导航条是所有页面都需要的，所以我们可以在基础模板中放进这部分内容，方便被子模版继承并填充具体内容#}
+<nav class="navbar navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#timing-nav" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/timing_blog"><img src= "{% static 'timing_blog/images/black_logo.png'%}"><span class="navbar-text">澍时的博客网站</span></a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="timing-nav">
+      <ul class="nav navbar-nav">
+  <li class="active"><a href="#">博客主页</a></li>
+  <li><a href="#">关于时客</a></li>
+  <li><a href="https://space.bilibili.com/3493294239648214?spm_id_from=333.1007.0.0" target="_blank" class="hover-effect">联系澍时<div class="magic">
+        <img src="{% static 'timing_blog/images/ewm-bili.jpg' %}" alt="">
+        <img src="{% static 'timing_blog/images/ewm-qq.jpg' %}" alt="">
+        <img src="{% static 'timing_blog/images/ewm-wx.jpg' %}" alt="">
+      </div></a></li>
+  <li><a href="" class="hover-effect">林澍楠©时客
+      <div class="magic">
+        <img src="{% static 'timing_blog/images/black_logo.png' %}" alt="">
+        <img src="{% static 'timing_blog/images/white_logo.png' %}" alt="">
+        <img src="{% static 'timing_blog/images/black_logo2.png' %}" alt="">
+      </div>
+    </a>
+  </li>
+</ul>
+
+{#        指的是导航栏横向（行）中左边的内容，下面的右边的内容#}
+      <form class="navbar-form navbar-left" action="{% url 'timing_blog:blog_search' %}" method="get">
+        <div class="form-group">
+        <input type="text" class="form-control" name="keyword" placeholder="请输入你想搜索的内容...">
+        </div>
+        <button type="submit" class="btn btn-default">博客一下</button>
+      </form>
+{#        指的是导航栏中的查询表单#}
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'timing_blog:wechat_login' %}" class="hover-effect">微信登录</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+    {% block content %}
+    {% endblock %}
+    <div id="back-to-top">
+        <i class="glyphicon glyphicon-arrow-up"></i>
+    </div>
+{#内置的一个向上箭头的图案#}
+    <footer>
+    <div class="footer" role="navigation">
+        <div class="container">
+            <div class="navbar-text">
+                <ul class="footer-text">
+                    <li><a href="#">博客主页</a></li>
+                    <li><a href="#">关于时客</a></li>
+                    <li><a href="https://space.bilibili.com/3493294239648214?spm_id_from=333.1007.0.0" target="_blank">联系澍时</a></li>
+                    <li><a href="#">文档支持</a></li>
+                    <li><a href="/timing_blog">博客首页</a></li>
+                </ul>
+                <p>Copyright © 2023 时客/澍时的博客网站<br>Copyright © 澍时. All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="{% static 'jquery-3.2.1.min.js' %}" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="{% static 'bootstrap-3.4.1-dist/js/bootstrap.min.js' %}" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script>
+        $("#back-to-top").click(function () {
+            window.scrollTo(0,0);
+        });
+    </script>
+    {% block script %}
+    {% endblock %}
+  </body>
+</html>
